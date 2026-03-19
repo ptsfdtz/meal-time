@@ -5,6 +5,7 @@ import 'package:mealtime/core/theme/app_theme.dart';
 import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dart';
 import 'package:mealtime/features/discover/presentation/models/discover_filter_state.dart';
 import 'package:mealtime/features/discover/presentation/pages/discover_filter_page.dart';
+import 'package:mealtime/features/discover/presentation/pages/discover_store_detail_page.dart';
 import 'package:mealtime/features/discover/presentation/widgets/discover_store_card.dart';
 import 'package:mealtime/features/home/presentation/widgets/floating_bottom_nav.dart';
 
@@ -152,6 +153,41 @@ class _DiscoverPageState extends State<DiscoverPage> {
     });
   }
 
+  Future<void> _openStoreDetail(DiscoverStoreCardData store) async {
+    await Navigator.of(context).push(
+      PageRouteBuilder<void>(
+        pageBuilder:
+            (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+            ) => DiscoverStoreDetailPage(store: store),
+        transitionsBuilder:
+            (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget child,
+            ) {
+              final Animation<Offset> slide =
+                  Tween<Offset>(
+                    begin: const Offset(0.06, 0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    ),
+                  );
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(position: slide, child: child),
+              );
+            },
+      ),
+    );
+  }
+
   List<String> get _chips => <String>[
     _filter.waitChipLabel,
     _filter.cuisineChipLabel,
@@ -220,12 +256,12 @@ class _DiscoverPageState extends State<DiscoverPage> {
                                 });
                               },
                               onOpenFilter: _openFilterPage,
+                              onStoreTap: _openStoreDetail,
                             )
                           : _DiscoverListView(
                               key: ValueKey<String>('list-$refreshKey'),
                               cards: cards,
-                              onCardTap: (int index) =>
-                                  _openMap(selectedIndex: index),
+                              onCardTap: _openStoreDetail,
                               onOpenFilter: _openFilterPage,
                             ),
                     ),
@@ -525,7 +561,7 @@ class _DiscoverListView extends StatelessWidget {
   });
 
   final List<DiscoverStoreCardData> cards;
-  final ValueChanged<int> onCardTap;
+  final ValueChanged<DiscoverStoreCardData> onCardTap;
   final VoidCallback onOpenFilter;
 
   @override
@@ -540,7 +576,7 @@ class _DiscoverListView extends StatelessWidget {
       itemBuilder: (_, int index) {
         return DiscoverStoreCard(
           data: cards[index],
-          onTap: () => onCardTap(index),
+          onTap: () => onCardTap(cards[index]),
         );
       },
       separatorBuilder: (_, _) => const SizedBox(height: 16),
@@ -556,12 +592,14 @@ class _DiscoverMapView extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelect,
     required this.onOpenFilter,
+    required this.onStoreTap,
   });
 
   final List<DiscoverStoreCardData> cards;
   final int selectedIndex;
   final ValueChanged<int> onSelect;
   final VoidCallback onOpenFilter;
+  final ValueChanged<DiscoverStoreCardData> onStoreTap;
 
   @override
   Widget build(BuildContext context) {
@@ -594,7 +632,10 @@ class _DiscoverMapView extends StatelessWidget {
           left: 16,
           right: 16,
           bottom: 16,
-          child: _MapPreviewCard(data: selected),
+          child: _MapPreviewCard(
+            data: selected,
+            onTap: () => onStoreTap(selected),
+          ),
         ),
       ],
     );
@@ -799,108 +840,112 @@ class _SquareButton extends StatelessWidget {
 }
 
 class _MapPreviewCard extends StatelessWidget {
-  const _MapPreviewCard({required this.data});
+  const _MapPreviewCard({required this.data, required this.onTap});
 
   final DiscoverStoreCardData data;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.accentColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x40000000),
-            blurRadius: 28,
-            offset: Offset(0, 12),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.fromLTRB(17, 17, 17, 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              data.imageAsset,
-              width: 96,
-              height: 96,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Image.asset(
-                AppAssets.discoverMapPreviewBg,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.accentColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x40000000),
+              blurRadius: 28,
+              offset: Offset(0, 12),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(17, 17, 17, 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                data.imageAsset,
                 width: 96,
                 height: 96,
                 fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Image.asset(
+                  AppAssets.discoverMapPreviewBg,
+                  width: 96,
+                  height: 96,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.title.split(' · ').first,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF0F172A),
-                    fontSize: 24,
-                    height: 1,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  data.distance,
-                  style: TextStyle(
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.9),
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  data.waiting.replaceFirst('预计等待: ', ''),
-                  style: TextStyle(
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.9),
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Text(
-                      data.price,
-                      style: const TextStyle(
-                        color: Color(0xFF0F172A),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.title.split(' · ').first,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFF0F172A),
+                      fontSize: 24,
+                      height: 1,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const Spacer(),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      child: const Text(
-                        '详情',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    data.distance,
+                    style: TextStyle(
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.9),
+                      fontSize: 12,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    data.waiting.replaceFirst('预计等待: ', ''),
+                    style: TextStyle(
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.9),
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text(
+                        data.price,
+                        style: const TextStyle(
+                          color: Color(0xFF0F172A),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F172A),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: const Text(
+                          '详情',
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
