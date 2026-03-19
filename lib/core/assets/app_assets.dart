@@ -21,4 +21,57 @@ class AppAssets {
   static const String homeNavStore = 'assets/icons/home_nav_store.svg';
   static const String homeNavFeed = 'assets/icons/home_nav_feed.svg';
   static const String homeNavProfile = 'assets/icons/home_nav_profile.svg';
+
+  static const String discoverShopAkita =
+      'assets/images/discover_shop_akita.jpg';
+  static const String discoverShopMota = 'assets/images/discover_shop_mota.jpg';
+  static const String discoverShopHakata =
+      'assets/images/discover_shop_hakata.jpg';
+
+  static const String discoverMapButton =
+      'assets/icons/discover_map_button.svg';
+  static const String discoverBack = 'assets/icons/discover_back.svg';
+  static const String discoverFilter = 'assets/icons/discover_filter.svg';
+  static const String discoverChipChevron =
+      'assets/icons/discover_chip_chevron.svg';
+  static const String discoverFavorite = 'assets/icons/discover_favorite.svg';
+  static const String discoverShare = 'assets/icons/discover_share.svg';
+  static const String discoverStar = 'assets/icons/discover_star.svg';
+
+  static const String discoverNavHome = 'assets/icons/discover_nav_home.svg';
+  static const String discoverNavStore = 'assets/icons/discover_nav_store.svg';
+  static const String discoverNavFeed = 'assets/icons/discover_nav_feed.svg';
+  static const String discoverNavProfile =
+      'assets/icons/discover_nav_profile.svg';
+
+  static const String discoverMapBackground =
+      'assets/images/discover_map_background.svg';
+  static const String discoverMapPreviewBg =
+      'assets/images/discover_map_preview_bg.jpg';
+
+  static const String discoverMapBack = 'assets/icons/discover_map_back.svg';
+  static const String discoverMapFilter =
+      'assets/icons/discover_map_filter.svg';
+  static const String discoverMapChipChevron =
+      'assets/icons/discover_map_chip_chevron.svg';
+  static const String discoverMapMarkerCrowded =
+      'assets/icons/discover_map_marker_crowded.svg';
+  static const String discoverMapMarkerCrowded2 =
+      'assets/icons/discover_map_marker_crowded2.svg';
+  static const String discoverMapMarkerEmpty =
+      'assets/icons/discover_map_marker_empty.svg';
+  static const String discoverMapPlus = 'assets/icons/discover_map_plus.svg';
+  static const String discoverMapMinus = 'assets/icons/discover_map_minus.svg';
+  static const String discoverMapLocate =
+      'assets/icons/discover_map_locate.svg';
+  static const String discoverMapSelected =
+      'assets/icons/discover_map_selected.svg';
+  static const String discoverMapListView =
+      'assets/icons/discover_map_list_view.svg';
+  static const String discoverMapPreviewRoute =
+      'assets/icons/discover_map_preview_route.svg';
+  static const String discoverMapPreviewWait =
+      'assets/icons/discover_map_preview_wait.svg';
+  static const String discoverMapPreviewArrow =
+      'assets/icons/discover_map_preview_arrow.svg';
 }

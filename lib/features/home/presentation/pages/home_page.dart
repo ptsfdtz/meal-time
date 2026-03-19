@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mealtime/core/assets/app_assets.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dart';
+import 'package:mealtime/features/discover/presentation/pages/discover_page.dart';
 import 'package:mealtime/features/home/presentation/widgets/floating_bottom_nav.dart';
 import 'package:mealtime/features/home/presentation/widgets/home_header.dart';
 import 'package:mealtime/features/home/presentation/widgets/mall_card.dart';
@@ -142,13 +143,52 @@ class _HomePageState extends State<HomePage> {
                                         fontSize: 16,
                                       ),
                                     ),
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute<void>(
+                                            builder: (_) => const DiscoverPage(
+                                              config: DiscoverPageConfig.all,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: const Icon(
+                                        Icons.chevron_right,
+                                        color: AppTheme.accentColor,
+                                        size: 16,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              MallCard(data: _malls[0]),
+                              MallCard(
+                                data: _malls[0],
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => const DiscoverPage(
+                                        config: DiscoverPageConfig.globalHarbor,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                               const SizedBox(height: 16),
-                              MallCard(data: _malls[1]),
+                              MallCard(
+                                data: _malls[1],
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => const DiscoverPage(
+                                        config: DiscoverPageConfig.wanda,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -165,7 +205,37 @@ class _HomePageState extends State<HomePage> {
             bottom: 24,
             child: EntranceSection(
               visible: _showBottomNav,
-              child: const FloatingBottomNav(),
+              child: FloatingBottomNav(
+                items: const [
+                  BottomNavItemData(
+                    iconAsset: AppAssets.homeNavHome,
+                    label: '首页',
+                  ),
+                  BottomNavItemData(
+                    iconAsset: AppAssets.homeNavStore,
+                    label: '寻店',
+                  ),
+                  BottomNavItemData(
+                    iconAsset: AppAssets.homeNavFeed,
+                    label: '动态',
+                  ),
+                  BottomNavItemData(
+                    iconAsset: AppAssets.homeNavProfile,
+                    label: '我的',
+                  ),
+                ],
+                selectedIndex: 0,
+                onTap: (int index) {
+                  if (index == 1) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const DiscoverPage(config: DiscoverPageConfig.all),
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],
