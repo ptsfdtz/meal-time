@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mealtime/core/assets/app_assets.dart';
+import 'package:mealtime/core/navigation/app_route_names.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dart';
 import 'package:mealtime/features/discover/presentation/models/discover_filter_state.dart';
 import 'package:mealtime/features/discover/presentation/pages/discover_filter_page.dart';
 import 'package:mealtime/features/discover/presentation/pages/discover_store_detail_page.dart';
 import 'package:mealtime/features/discover/presentation/widgets/discover_store_card.dart';
+import 'package:mealtime/features/feed/presentation/models/feed_models.dart';
 import 'package:mealtime/features/home/presentation/widgets/floating_bottom_nav.dart';
 
 enum _FilterChipType { wait, cuisine, distance }
@@ -192,6 +194,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
+  Future<void> _openFeed() {
+    return Navigator.of(context).pushNamed(
+      AppRouteNames.feed,
+      arguments: const FeedPageArgs(
+        initialTab: FeedTab.social,
+        origin: FeedOrigin.discover,
+      ),
+    );
+  }
+
   void _removeFilterChip(_FilterChipType type) {
     setState(() {
       switch (type) {
@@ -353,6 +365,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 onTap: (int index) {
                   if (index == 0) {
                     Navigator.of(context).pop();
+                  }
+                  if (index == 2) {
+                    _openFeed();
                   }
                 },
               ),

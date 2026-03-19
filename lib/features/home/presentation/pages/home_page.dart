@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mealtime/core/assets/app_assets.dart';
+import 'package:mealtime/core/navigation/app_route_names.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dart';
 import 'package:mealtime/features/discover/presentation/pages/discover_page.dart';
+import 'package:mealtime/features/feed/presentation/models/feed_models.dart';
 import 'package:mealtime/features/home/presentation/widgets/floating_bottom_nav.dart';
 import 'package:mealtime/features/home/presentation/widgets/home_header.dart';
 import 'package:mealtime/features/home/presentation/widgets/mall_card.dart';
@@ -83,6 +85,22 @@ class _HomePageState extends State<HomePage> {
     setState(callback);
   }
 
+  void _openDiscover(DiscoverPageConfig config) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: AppRouteNames.discover),
+        builder: (_) => DiscoverPage(config: config),
+      ),
+    );
+  }
+
+  Future<void> _openFeed(FeedTab tab) {
+    return Navigator.of(context).pushNamed(
+      AppRouteNames.feed,
+      arguments: FeedPageArgs(initialTab: tab, origin: FeedOrigin.home),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +112,11 @@ class _HomePageState extends State<HomePage> {
               children: [
                 EntranceSection(
                   visible: _showHeader,
-                  child: const HomeHeader(),
+                  child: HomeHeader(
+                    onBellTap: () {
+                      _openFeed(FeedTab.reminders);
+                    },
+                  ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -145,15 +167,8 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(width: 8),
                                     GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute<void>(
-                                            builder: (_) => const DiscoverPage(
-                                              config: DiscoverPageConfig.all,
-                                            ),
-                                          ),
-                                        );
-                                      },
+                                      onTap: () =>
+                                          _openDiscover(DiscoverPageConfig.all),
                                       child: const Icon(
                                         Icons.chevron_right,
                                         color: AppTheme.accentColor,
@@ -166,28 +181,15 @@ class _HomePageState extends State<HomePage> {
                               const SizedBox(height: 16),
                               MallCard(
                                 data: _malls[0],
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => const DiscoverPage(
-                                        config: DiscoverPageConfig.globalHarbor,
-                                      ),
-                                    ),
-                                  );
-                                },
+                                onTap: () => _openDiscover(
+                                  DiscoverPageConfig.globalHarbor,
+                                ),
                               ),
                               const SizedBox(height: 16),
                               MallCard(
                                 data: _malls[1],
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => const DiscoverPage(
-                                        config: DiscoverPageConfig.wanda,
-                                      ),
-                                    ),
-                                  );
-                                },
+                                onTap: () =>
+                                    _openDiscover(DiscoverPageConfig.wanda),
                               ),
                             ],
                           ),
@@ -227,12 +229,10 @@ class _HomePageState extends State<HomePage> {
                 selectedIndex: 0,
                 onTap: (int index) {
                   if (index == 1) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            const DiscoverPage(config: DiscoverPageConfig.all),
-                      ),
-                    );
+                    _openDiscover(DiscoverPageConfig.all);
+                  }
+                  if (index == 2) {
+                    _openFeed(FeedTab.social);
                   }
                 },
               ),

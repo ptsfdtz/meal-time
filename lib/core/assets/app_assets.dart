@@ -92,4 +92,33 @@ class AppAssets {
       'assets/icons/detail_chevron_right.svg';
   static const String detailBack = 'assets/icons/detail_back.svg';
   static const String detailShare = 'assets/icons/detail_share.svg';
+
+  static const String feedLogo = 'assets/icons/feed_logo.svg';
+  static const String feedHeaderSearch = 'assets/icons/feed_header_search.svg';
+  static const String feedHeaderSettings =
+      'assets/icons/feed_header_settings.svg';
+  static const String feedChevron = 'assets/icons/feed_chevron.svg';
+  static const String feedReminderCall = 'assets/icons/feed_reminder_call.svg';
+  static const String feedReminderFlow = 'assets/icons/feed_reminder_flow.svg';
+  static const String feedReminderClock =
+      'assets/icons/feed_reminder_clock.svg';
+  static const String feedReminderWarning =
+      'assets/icons/feed_reminder_warning.svg';
+  static const String feedReminderSystem =
+      'assets/icons/feed_reminder_system.svg';
+  static const String feedReminderPromo =
+      'assets/icons/feed_reminder_promo.svg';
+  static const String feedSessionClock = 'assets/icons/feed_session_clock.svg';
+  static const String feedLike = 'assets/icons/feed_like.svg';
+  static const String feedComment = 'assets/icons/feed_comment.svg';
+
+  static const String feedAvatarZhang = 'assets/images/feed_avatar_zhang.png';
+  static const String feedAvatarVote1 = 'assets/images/feed_avatar_vote_1.png';
+  static const String feedAvatarVote2 = 'assets/images/feed_avatar_vote_2.png';
+  static const String feedAvatarLisi = 'assets/images/feed_avatar_lisi.jpg';
+  static const String feedAvatarWangwu = 'assets/images/feed_avatar_wangwu.jpg';
+  static const String feedAvatarZhaoliu =
+      'assets/images/feed_avatar_zhaoliu.png';
+  static const String feedPostRestaurant =
+      'assets/images/feed_post_restaurant.png';
 }

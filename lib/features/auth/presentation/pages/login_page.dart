@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mealtime/core/auth/auth_config.dart';
+import 'package:mealtime/core/navigation/app_route_names.dart';
 import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dart';
 import 'package:mealtime/features/auth/presentation/widgets/login_form.dart';
 import 'package:mealtime/features/auth/presentation/widgets/login_header.dart';
@@ -83,6 +84,7 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(const SnackBar(content: Text('登录成功')));
       Navigator.of(context).push(
         MaterialPageRoute<void>(
+          settings: const RouteSettings(name: AppRouteNames.home),
           builder: (BuildContext context) => const HomePage(),
         ),
       );

@@ -4,7 +4,9 @@ import 'package:mealtime/core/assets/app_assets.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  const HomeHeader({super.key, this.onBellTap});
+
+  final VoidCallback? onBellTap;
 
   @override
   Widget build(BuildContext context) {
@@ -44,43 +46,46 @@ class HomeHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0x8048416B),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-            ),
-            child: Stack(
-              children: [
-                Center(
-                  child: SizedBox(
-                    width: 16,
-                    height: 20,
-                    child: SvgPicture.asset(
-                      AppAssets.homeBell,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 11,
-                  top: 11,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1AA9E),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: AppTheme.backgroundColor,
-                        width: 2,
+          GestureDetector(
+            onTap: onBellTap,
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0x8048416B),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: SizedBox(
+                      width: 16,
+                      height: 20,
+                      child: SvgPicture.asset(
+                        AppAssets.homeBell,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    right: 11,
+                    top: 11,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1AA9E),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppTheme.backgroundColor,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
