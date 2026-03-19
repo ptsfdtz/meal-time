@@ -74,4 +74,22 @@ class AppAssets {
       'assets/icons/discover_map_preview_wait.svg';
   static const String discoverMapPreviewArrow =
       'assets/icons/discover_map_preview_arrow.svg';
+
+  static const String detailHeroBg = 'assets/images/detail_hero_bg.jpg';
+  static const String detailPlanBManner =
+      'assets/images/detail_planb_manner.jpg';
+  static const String detailPlanBSeesaw =
+      'assets/images/detail_planb_seesaw.jpg';
+  static const String detailLocation = 'assets/icons/detail_location.svg';
+  static const String detailChartCurrent =
+      'assets/icons/detail_chart_current.svg';
+  static const String detailChartPredict =
+      'assets/icons/detail_chart_predict.svg';
+  static const String detailDecisionIcon =
+      'assets/icons/detail_decision_icon.svg';
+  static const String detailSliderKnob = 'assets/icons/detail_slider_knob.svg';
+  static const String detailChevronRight =
+      'assets/icons/detail_chevron_right.svg';
+  static const String detailBack = 'assets/icons/detail_back.svg';
+  static const String detailShare = 'assets/icons/detail_share.svg';
 }

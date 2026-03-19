@@ -9,6 +9,15 @@ import 'package:mealtime/features/discover/presentation/pages/discover_store_det
 import 'package:mealtime/features/discover/presentation/widgets/discover_store_card.dart';
 import 'package:mealtime/features/home/presentation/widgets/floating_bottom_nav.dart';
 
+enum _FilterChipType { wait, cuisine, distance }
+
+class _ActiveFilterChip {
+  const _ActiveFilterChip({required this.type, required this.label});
+
+  final _FilterChipType type;
+  final String label;
+}
+
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key, required this.config});
 
@@ -21,7 +30,6 @@ class DiscoverPage extends StatefulWidget {
 class _DiscoverPageState extends State<DiscoverPage> {
   bool _showHeader = false;
   bool _showBody = false;
-  bool _showBottomNav = false;
   bool _isMapView = false;
   int _selectedIndex = 0;
   int _sortIndex = 0;
@@ -42,10 +50,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
     Future<void>.delayed(
       const Duration(milliseconds: 180),
       () => _setIfMounted(() => _showBody = true),
-    );
-    Future<void>.delayed(
-      const Duration(milliseconds: 320),
-      () => _setIfMounted(() => _showBottomNav = true),
     );
   }
 
@@ -188,11 +192,48 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  List<String> get _chips => <String>[
-    _filter.waitChipLabel,
-    _filter.cuisineChipLabel,
-    _filter.distanceChipLabel,
-  ];
+  void _removeFilterChip(_FilterChipType type) {
+    setState(() {
+      switch (type) {
+        case _FilterChipType.wait:
+          _filter = _filter.copyWith(maxWaitMinutes: 60);
+        case _FilterChipType.cuisine:
+          _filter = _filter.copyWith(clearCuisine: true);
+        case _FilterChipType.distance:
+          _filter = _filter.copyWith(clearDistance: true);
+      }
+      _selectedIndex = _safeIndex(_visibleCards.length, _selectedIndex);
+    });
+  }
+
+  List<_ActiveFilterChip> get _chips {
+    final List<_ActiveFilterChip> chips = <_ActiveFilterChip>[];
+    if (_filter.maxWaitMinutes < 60) {
+      chips.add(
+        _ActiveFilterChip(
+          type: _FilterChipType.wait,
+          label: _filter.waitChipLabel,
+        ),
+      );
+    }
+    if (_filter.cuisine != null && _filter.cuisine!.isNotEmpty) {
+      chips.add(
+        _ActiveFilterChip(
+          type: _FilterChipType.cuisine,
+          label: _filter.cuisineChipLabel,
+        ),
+      );
+    }
+    if (_filter.maxDistanceKm != null) {
+      chips.add(
+        _ActiveFilterChip(
+          type: _FilterChipType.distance,
+          label: _filter.distanceChipLabel,
+        ),
+      );
+    }
+    return chips;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +262,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
                     sortIndex: _sortIndex,
                     onOpenFilter: _openFilterPage,
                     onChipTap: (_) => _openFilterPage(),
+                    onChipRemove: _removeFilterChip,
                     onSortTap: (int index) {
                       if (_sortIndex == index) {
                         return;
@@ -283,25 +325,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 ),
               ),
             ),
-          if (_isMapView && cards.isNotEmpty)
+          if (!_isMapView)
             Positioned(
-              left: 0,
-              right: 0,
-              bottom: 144,
-              child: Center(
-                child: _ModeToggleButton(
-                  iconAsset: AppAssets.discoverMapListView,
-                  text: '列表视图',
-                  onTap: _openList,
-                ),
-              ),
-            ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 24,
-            child: EntranceSection(
-              visible: _showBottomNav,
+              left: 20,
+              right: 20,
+              bottom: 24,
               child: FloatingBottomNav(
                 items: const <BottomNavItemData>[
                   BottomNavItemData(
@@ -329,7 +357,19 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 },
               ),
             ),
-          ),
+          if (_isMapView && cards.isNotEmpty)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 144,
+              child: Center(
+                child: _ModeToggleButton(
+                  iconAsset: AppAssets.discoverMapListView,
+                  text: '列表视图',
+                  onTap: _openList,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -346,11 +386,7 @@ class DiscoverPageConfig {
   final DiscoverFilterState initialFilter;
 
   static const DiscoverPageConfig all = DiscoverPageConfig(
-    initialFilter: DiscoverFilterState(
-      maxWaitMinutes: 20,
-      cuisine: '日料',
-      maxDistanceKm: 1,
-    ),
+    initialFilter: DiscoverFilterState.initial,
     cards: <DiscoverStoreCardData>[
       DiscoverStoreCardData(
         imageAsset: AppAssets.discoverShopAkita,
@@ -403,11 +439,7 @@ class DiscoverPageConfig {
   static const DiscoverPageConfig globalHarbor = all;
 
   static const DiscoverPageConfig wanda = DiscoverPageConfig(
-    initialFilter: DiscoverFilterState(
-      maxWaitMinutes: 30,
-      cuisine: null,
-      maxDistanceKm: 3,
-    ),
+    initialFilter: DiscoverFilterState.initial,
     cards: <DiscoverStoreCardData>[
       DiscoverStoreCardData(
         imageAsset: AppAssets.discoverShopMota,
@@ -465,14 +497,16 @@ class _DiscoverHeader extends StatelessWidget {
     required this.sortIndex,
     required this.onOpenFilter,
     required this.onChipTap,
+    required this.onChipRemove,
     required this.onSortTap,
   });
 
   final bool mapMode;
-  final List<String> chips;
+  final List<_ActiveFilterChip> chips;
   final int sortIndex;
   final VoidCallback onOpenFilter;
-  final ValueChanged<int> onChipTap;
+  final ValueChanged<_FilterChipType> onChipTap;
+  final ValueChanged<_FilterChipType> onChipRemove;
   final ValueChanged<int> onSortTap;
 
   @override
@@ -520,32 +554,41 @@ class _DiscoverHeader extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 18),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List<Widget>.generate(chips.length, (int index) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                    right: index == chips.length - 1 ? 0 : 8,
-                  ),
-                  child: _FilterChip(
-                    text: chips[index],
-                    chevronAsset: mapMode
-                        ? AppAssets.discoverMapChipChevron
-                        : AppAssets.discoverChipChevron,
-                    rounded: mapMode ? 12 : 999,
-                    backgroundAlpha: mapMode ? 0.2 : 0.1,
-                    onTap: () => onChipTap(index),
-                  ),
-                );
-              }),
+        SizedBox(height: chips.isEmpty ? 10 : 18),
+        if (chips.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List<Widget>.generate(chips.length, (int index) {
+                  final _ActiveFilterChip chip = chips[index];
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index == chips.length - 1 ? 0 : 8,
+                    ),
+                    child: _FilterChip(
+                      text: chip.label,
+                      chevronAsset: mapMode
+                          ? AppAssets.discoverMapChipChevron
+                          : AppAssets.discoverChipChevron,
+                      rounded: mapMode ? 12 : 999,
+                      backgroundAlpha: mapMode ? 0.2 : 0.1,
+                      onTap: () => onChipTap(chip.type),
+                      onTrailingTap: () {
+                        if (mapMode) {
+                          onChipTap(chip.type);
+                          return;
+                        }
+                        onChipRemove(chip.type);
+                      },
+                    ),
+                  );
+                }),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
+        SizedBox(height: chips.isEmpty ? 0 : 8),
         if (!mapMode) _SortTabs(activeIndex: sortIndex, onTap: onSortTap),
       ],
     );
@@ -1090,6 +1133,7 @@ class _FilterChip extends StatelessWidget {
     required this.rounded,
     required this.backgroundAlpha,
     required this.onTap,
+    required this.onTrailingTap,
   });
 
   final String text;
@@ -1097,33 +1141,39 @@ class _FilterChip extends StatelessWidget {
   final double rounded;
   final double backgroundAlpha;
   final VoidCallback onTap;
+  final VoidCallback onTrailingTap;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 32,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: backgroundAlpha),
-          borderRadius: BorderRadius.circular(rounded),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 13),
-        child: Row(
-          children: [
-            Text(
+    return Container(
+      height: 32,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: backgroundAlpha),
+        borderRadius: BorderRadius.circular(rounded),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Text(
               text,
               style: const TextStyle(color: Color(0xFFF1F5F9), fontSize: 12),
             ),
-            const SizedBox(width: 4),
-            SizedBox(
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: onTrailingTap,
+            behavior: HitTestBehavior.opaque,
+            child: SizedBox(
               width: 8.17,
               height: 8.17,
               child: SvgPicture.asset(chevronAsset),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
