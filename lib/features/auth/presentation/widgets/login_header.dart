@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mealtime/core/assets/app_assets.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 
 class LoginHeader extends StatelessWidget {
@@ -25,12 +27,12 @@ class LoginHeader extends StatelessWidget {
               ],
             ),
             alignment: Alignment.center,
-            child: const Text(
-              '食',
-              style: TextStyle(
-                fontSize: 36,
-                color: AppTheme.backgroundColor,
-                fontWeight: FontWeight.w500,
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: SvgPicture.asset(
+                AppAssets.loginLogoIcon,
+                fit: BoxFit.contain,
               ),
             ),
           ),

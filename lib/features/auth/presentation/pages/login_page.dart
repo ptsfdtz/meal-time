@@ -4,7 +4,7 @@ import 'package:mealtime/features/auth/presentation/widgets/entrance_section.dar
 import 'package:mealtime/features/auth/presentation/widgets/login_form.dart';
 import 'package:mealtime/features/auth/presentation/widgets/login_header.dart';
 import 'package:mealtime/features/auth/presentation/widgets/third_party_login_section.dart';
-import 'package:mealtime/features/home/presentation/pages/home_placeholder_page.dart';
+import 'package:mealtime/features/home/presentation/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -83,8 +83,7 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(const SnackBar(content: Text('登录成功')));
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (BuildContext context) =>
-              HomePlaceholderPage(account: account),
+          builder: (BuildContext context) => const HomePage(),
         ),
       );
     } else {

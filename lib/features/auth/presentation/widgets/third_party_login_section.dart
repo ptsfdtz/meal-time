@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mealtime/core/assets/app_assets.dart';
 import 'package:mealtime/core/theme/app_theme.dart';
 
 class ThirdPartyLoginSection extends StatelessWidget {
@@ -35,11 +37,20 @@ class ThirdPartyLoginSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _ThirdPartyButton(
-                icon: Icon(Icons.wechat_rounded, color: Colors.white, size: 22),
+                icon: Image(
+                  image: AssetImage(AppAssets.loginWechat),
+                  width: 20,
+                  height: 16,
+                  fit: BoxFit.contain,
+                ),
               ),
               SizedBox(width: 30),
               _ThirdPartyButton(
-                icon: Icon(Icons.apple, color: Colors.white, size: 24),
+                icon: SizedBox(
+                  width: 24.98,
+                  height: 27.59,
+                  child: _GroupIcon(),
+                ),
               ),
             ],
           ),
@@ -84,5 +95,14 @@ class _ThirdPartyButtonState extends State<_ThirdPartyButton> {
         ),
       ),
     );
+  }
+}
+
+class _GroupIcon extends StatelessWidget {
+  const _GroupIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(AppAssets.loginGroup, fit: BoxFit.contain);
   }
 }

@@ -21,6 +21,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
 
-    expect(find.text('欢迎回来，admin'), findsOneWidget);
+    expect(find.text('附近商场'), findsOneWidget);
   });
 }
